@@ -5,14 +5,16 @@
 //  Created by Will Hannah on 10/22/24.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 @main
 struct avpickerApp: App {
+    @StateObject var appState = AppState()
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            ImportedAsset.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -28,5 +30,6 @@ struct avpickerApp: App {
             ContentView()
         }
         .modelContainer(sharedModelContainer)
+        .environmentObject(appState)
     }
 }

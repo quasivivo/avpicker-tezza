@@ -5,57 +5,62 @@
 //  Created by Will Hannah on 10/22/24.
 //
 
-import SwiftUI
+import Factory
 import SwiftData
+import SwiftUI
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @Injected(\.appState) var appState: AppStateProtocol
+
+    init() {
+        UITabBar.appearance().barTintColor = UIColor(Color(.white))
+        UITabBar.appearance().shadowImage = nil
+    }
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+        TabView {
+            Group {
+                ImporterView()
+                    .tabItem {
+                        Image(systemName: "face.smiling")
+                            .font(.title)
                     }
-                }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+                    .environmentObject(ImporterViewModel())
+
+                Text("Second View")
+                    .tabItem {
+                        Image(systemName: "play.rectangle")
                     }
-                }
-            }
-        } detail: {
-            Text("Select an item")
-        }
-    }
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
+                Text("Third View")
+                    .tabItem {
+                        Image(systemName: "circle.hexagonpath")
+                    }
 
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
+                Text("Fourth View")
+                    .tabItem {
+                        Image(systemName: "i.square")
+                    }
+                    .badge(1)
+                    .badgeProminence(.increased)
+
+                Text("Fifth View")
+                    .tabItem {
+                        Image(systemName: "hexagon")
+                            .resizable()
+                            .frame(width: 32, height: 32)
+                            .aspectRatio(contentMode: .fit)
+                    }
             }
+            .toolbarBackground(.white, for: .tabBar)
+            .toolbarBackground(.visible, for: .tabBar)
+            .toolbarColorScheme(.light, for: .tabBar)
+            .tint(.gray)
         }
     }
 }
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
 }
